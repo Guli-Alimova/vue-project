@@ -1,7 +1,11 @@
 <template>
 <div class="container">
-<Header title="track"/>
-<Tasks :tasks="tasks"/>
+<Header @toggle-add-task="toggleAddTask" title="Note" :showAddTask="showAddTask"/>
+<div v-if="showAddTask">
+  <AddTask @add-task="addTask" />
+</div>
+
+<Tasks @toggle-reminder="toggleReminder" @delete-task="deleteTask" :tasks="tasks"/>
 </div>
 
 </template>
@@ -9,17 +13,41 @@
 <script>
 import Header from './components/Header.vue'
 import Tasks from './components/Tasks.vue'
+import AddTask from './components/AddTask.vue'
 export default {
   name: 'App',
   components:{
     Header,
-    Tasks
+    Tasks,
+    AddTask
   },
   data(){
     return{
-      tasks:[]
+      tasks:[],
+      showAddTask: false
     }
   },
+  methods:{
+    toggleAddTask(){
+      this.showAddTask = !this.showAddTask
+    },
+    addTask(task){
+      this.tasks = [...this.tasks, task]
+    },
+    deleteTask(id) {
+      if(confirm('vi soglasnie udalit')){
+        this.tasks = this.tasks.filter((task)=> task.id !== id) 
+      }
+     
+    },
+   toggleReminder(id) {
+     console.log(id);
+    this.tasks = this.tasks.map((task)=> task.id === id ? {...task, reminder: !task.reminder} :
+     task)
+    }
+
+  },
+
   created(){
     this.tasks = [
     {
@@ -38,7 +66,7 @@ export default {
       id:3,
       text:'Chalsea was created',
       day:'march 1st march 1989 at 2:30pm',
-      reminder:true
+      reminder:false
     }
     ]
   }
